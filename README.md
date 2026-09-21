@@ -1,65 +1,79 @@
 # Penrose Tiling
 
-Isaac Hung's research poster and its interactive companion website, based on de Bruijn's pentagrid construction.
+An interactive exploration of **Penrose tilings using de Bruijn's pentagrid construction**.
 
-- [Research poster (PDF)](paper/Penrose_Tiling_Poster.pdf)
-- [Editable LaTeX source](paper/poster.tex)
-- [Interactive website](website/index.html)
+[**Live Demo**](YOUR-GITHUB-PAGES-LINK) | [**Research Poster**](Penrose_Tiling_Poster.pdf)
 
-## Run the website
+## Overview
 
-From this repository:
+This project visualises the mathematical construction of Penrose tilings using de Bruijn's **pentagrid method**.
 
-```sh
-npm start
+The interactive website lets you modify the pentagrid and see how it determines the corresponding Penrose tiling. You can explore individual rhombi, highlight ribbons associated with pentagrid lines, and watch the tiling assemble from a chosen starting tile.
+
+The accompanying research poster explains the mathematical ideas behind the construction.
+
+## Features
+
+### Interactive Pentagrid
+
+Adjust the pentagrid offsets and see the resulting Penrose tiling update instantly.
+
+### Pentagrid and Tiling
+
+View the five families of pentagrid lines together with their corresponding rhombus tiling.
+
+### Ribbon Highlighting
+
+Click a pentagrid line to highlight the ribbon of rhombi associated with that line.
+
+### Rhombus Selection
+
+Click a rhombus to inspect it or choose it as the starting point for the assembly animation.
+
+### Assembly Animation
+
+Watch the Penrose tiling assemble outward from a selected rhombus.
+
+Controls include:
+
+* Play / pause
+* Replay
+* Animation speed
+* Timeline control
+* Starting rhombus selection
+
+### Export
+
+Export the generated tiling as:
+
+* SVG
+* PNG
+* JSON
+
+## Mathematics
+
+The construction follows de Bruijn's pentagrid method.
+
+Five families of parallel lines are placed at angles separated by
+
+```math
+\frac{2\pi}{5}.
 ```
 
-Open **http://localhost:5173**. Alternatively, without Node.js:
+Intersections between pairs of pentagrid lines determine rhombi in the corresponding dual Penrose tiling.
 
-```sh
-python3 -m http.server 5173 --bind 127.0.0.1
-```
-
-The root page redirects to `website/`, preserving saved pattern parameters. Serve the whole repository so the website can link to the paper. No package installation or build step is needed to use the website; KaTeX and its fonts are bundled locally.
-
-## Repository layout
+## Repository
 
 ```text
-paper/
-  Penrose_Tiling_Poster.pdf   Rebuilt 120 × 72 cm poster
-  poster.tex                 Editable LaTeX source
-  figures/                   Five generated PDF/SVG figure pairs and parameters
-  assets/                    Institutional logo from the supplied poster
-  scripts/                   Reproducible figure and poster builders
-website/
-  index.html                 Interactive explorer
-  src/                       Geometry, controls, animation and styling
-  tests/                     Geometry and animation tests
-  vendor/                    Local KaTeX distribution and license
-  docs/                      Mathematical implementation notes
+Penrose-Tiling/
+├── Penrose_Tiling_Poster.pdf
+└── website/
+    ├── index.html
+    └── ...
 ```
 
-Only the paper, website and their maintenance files are intended for GitHub. `local-archive/` holds the original poster, original source folder and development scratch files **on this computer only**. It is ignored by Git, along with dependencies and compilation output. The old material has not been deleted.
+## Research
 
-## Rebuild and validate
-
-```sh
-npm test                  # Geometry and assembly-animation tests (Node.js 20+)
-npm run paper             # Regenerate figures and compile the poster
-```
-
-The paper build also needs Python 3, the packages in `paper/requirements.txt`, and a LaTeX distribution with `pdflatex`. See [paper build notes](paper/README.md).
-
-## What the website does
-
-Adjust grid offsets, compare the pentagrid with the dual tiling, and inspect a rhombus as its indexed grid lines move. Click any pentagrid line to highlight its entire ribbon of rhombi (as in poster Figure 3); the ribbon remains selected while shifts change. The fifth offset balances the other four. **Animate assembly** shows the current pattern forming outward through shared edges; play/pause, replay, speed and a timeline are available for every generated pattern. If a rhombus is selected, it is the assembly seed.
-
-SVG, PNG and JSON exports always contain the completed tiling, including while the animation is paused. Intermediate animation frames are illustrations of assembly, not valid tilings in their own right. SVG/PNG exports preserve a selected ribbon highlight; JSON records the selected line.
-
-## Attribution
-
-The poster credits Isaac Hung as the author, Yanki Lekili as the supervisor, and Imperial College London as the institution. Mathematical figures are generated by the original code in this repository. The institutional logo is preserved from the supplied source. The rebuilt poster uses a new standalone LaTeX layout; it does not depend on the old Gemini theme.
-
-Animation inspiration: [Fan Yang's Penrose DIY](https://github.com/fanyangxyz/penrose-diy). The animation here is an independent implementation on the existing pentagrid engine; no source code from that project was copied. KaTeX's license is included in `website/vendor/katex/LICENSE`.
-
-No blanket license is assigned to the poster, code or institutional branding. No GitHub remote or public deployment is configured; this repository is prepared locally for now.
+**Author:** Isaac Hung
+**Supervisor:** Yanki Lekili
+**Institution:** Imperial College London
