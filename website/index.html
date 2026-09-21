@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Penrose tilings through de Bruijn’s pentagrid method. An interactive companion to Isaac Hung’s research poster.">
+  <title>Penrose Tiling — Pentagrid Construction</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="src/style.css">
+  <script type="module" src="src/math.js"></script>
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="./">Penrose Tiling</a><nav><a href="#method">The method</a><a href="../paper/Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Research poster</a></nav></header>
+  <main>
+    <section class="intro"><div><h1>Pentagrid construction</h1><p class="lede">Interactive implementation of de Bruijn’s method.</p></div><div class="intro-note">Isaac Hung<br>Imperial College London</div></section>
+    <section class="workspace" aria-label="Interactive tiling generator">
+      <aside class="controls">
+        <div class="section-heading"><h2>Construction parameters</h2></div>
+        <p class="muted">Vary the offsets to explore the dual tiling. In the pentagrid view, a moving family is highlighted in black.</p>
+        <label class="field">Example<select id="preset"><option value="original">Default offsets</option><option value="rosette">Rosette</option><option value="ribbons">Ribbons</option><option value="singular">Singular grid</option><option value="custom" disabled>Custom arrangement</option></select></label>
+        <div class="section-heading small"><h3>Grid shifts</h3><span class="formula" data-tex="\sum_{j=0}^{4}\gamma_j=0">Σ γ = 0</span></div>
+        <div id="shifts"></div>
+        <div class="balanced"><span><i class="dot d4"></i>γ₄ <small>balanced automatically</small></span><output id="shift4"></output></div>
+        <button id="random" class="primary">Randomise offsets</button>
+        <div class="divider"></div>
+        <label class="range-label" for="radius">Patch radius <output id="radius-value">7</output></label><input id="radius" type="range" min="3" max="15" step="1" value="7">
+        <div class="range-hints"><span>R = 3</span><span>R = 15</span></div>
+        <label class="field">Color palette<select id="palette"><option value="poster">Poster colours</option><option value="mono">Black & white</option><option value="lagoon">Green / cream</option><option value="clay">Coral / peach</option><option value="ink">Blue-grey / white</option><option value="iris">Purple / lilac</option></select></label>
+        <label class="check"><input id="edges" type="checkbox" checked> Show tile edges</label>
+        <div class="divider"></div><div class="export-row"><button id="svg-export">↓ SVG</button><button id="png-export">↓ PNG</button><button id="json-export">↓ JSON</button></div>
+        <button id="share" class="text-button">Copy pattern link</button>
+        <p id="message" role="status" class="muted message"></p>
+      </aside>
+      <div class="studio">
+        <div class="studio-bar"><div class="tabs" role="group" aria-label="View"><button data-view="tiling" aria-pressed="true">Tiling</button><button data-view="both" aria-pressed="false">Side by side</button><button data-view="grid" aria-pressed="false">Pentagrid</button></div><span id="status" class="live">● Live construction</span></div>
+        <div class="ribbon-controls"><span>Select a ribbon:</span><label>Family <select id="line-family"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label><label>Line <input id="line-index" type="number" min="-100" max="100" step="1" value="0"></label><button id="select-line">Select line</button><button id="clear-selection">Clear selection</button><span class="ribbon-help">or click any pentagrid line</span></div>
+        <div class="animation-controls" aria-label="Rhombus assembly animation">
+          <div class="animation-buttons"><button id="animation-play" aria-pressed="false">Animate assembly</button><button id="animation-replay">Replay</button><button id="animation-reset">Show completed tiling</button><label>Speed <select id="animation-speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
+          <label class="animation-timeline" for="animation-progress">Assembly <input id="animation-progress" type="range" min="0" max="1000" value="1000"><output id="animation-readout" aria-live="off"></output></label>
+          <p>Rhombi move from their grid crossings into the dual tiling, spreading through shared edges. Intermediate frames illustrate assembly; they are not tilings.</p>
+        </div>
+        <div id="stages" class="stages" data-view="tiling">
+          <div class="stage tiling-stage"><span class="canvas-label">Rhombic tiling</span><svg id="tiling" viewBox="-20 -20 40 40" aria-label="Interactive Penrose tiling; click a tile to inspect it" role="img"></svg><div class="canvas-tools"><button id="zoom-out" aria-label="Zoom out">−</button><button id="fit">Fit</button><button id="zoom-in" aria-label="Zoom in">+</button></div><span class="canvas-hint">Drag to pan · Scroll to zoom · Click to inspect</span></div>
+          <div class="stage grid-stage"><span class="canvas-label">Pentagrid</span><svg id="grid" viewBox="-8 -8 16 16" aria-label="Five line families in the pentagrid; click a line to select its rhombus ribbon" role="img"></svg><span id="grid-motion" class="canvas-hint">One crossing ↔ one rhombus</span></div>
+        </div>
+        <div class="stats"><div><strong id="total">—</strong><span>Total rhombi</span></div><div><strong id="thick">—</strong><span><i class="swatch thick-swatch"></i>Thick · 72° / 108°</span></div><div><strong id="thin">—</strong><span><i class="swatch thin-swatch"></i>Thin · 36° / 144°</span></div><div><strong id="ratio">—</strong><span>Thick / thin · φ ≈ 1.618</span></div></div>
+        <div class="inspector"><div><p class="eyebrow">Selection</p><p id="inspect">Select a rhombus to reveal its grid crossing and five-dimensional coordinates.</p></div><button id="inspect-first" class="text-button">Inspect a tile</button></div>
+        <p id="singular-note" class="notice" hidden></p>
+      </div>
+    </section>
+    <section id="method" class="method">
+      <div class="method-intro"><h2>Constructing Penrose tilings with a pentagrid</h2><p>The pentagrid lives in one plane; its dual tiling lives in another. A cell of the grid becomes a vertex of the tiling, and a crossing of two lines becomes a rhombus.</p><p>The following construction uses the ceiling convention in the poster. Choose <strong>Side by side</strong> above to follow the correspondence as you change a shift.</p><a href="../paper/Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Research poster</a><div class="method-key"><span>Grid cell</span><b>↔</b><span>Tiling vertex</span><span>Two-line crossing</span><b>↔</b><span>Rhombus</span></div></div>
+      <ol class="derivation">
+        <li><span>01</span><div><h3>Choose five directions and offsets</h3><p>Take five unit vectors equally spaced around the circle. They are normals to the five line families and, later, edge directions of the rhombi.</p>
+          <div class="equation" data-tex="\mathbf v_j=\left(\cos\frac{2\pi j}{5},\,\sin\frac{2\pi j}{5}\right),\quad j=0,\ldots,4."></div>
+          <p>Adjacent vectors are separated by <span data-tex="2\pi/5=72^\circ"></span>, as shown in the corrected Figure 4. The offsets satisfy the Penrose sum condition:</p>
+          <div class="equation" data-tex="\sum_{j=0}^{4}\gamma_j=0,\qquad \gamma_4=-\sum_{j=0}^{3}\gamma_j."></div>
+          <p>This is why the fifth offset updates automatically whenever you move one of the four sliders.</p></div></li>
+        <li><span>02</span><div><h3>Draw the pentagrid</h3><p>For each direction, draw equally spaced parallel lines indexed by an integer. One family is</p>
+          <div class="equation" data-tex="L_j(k)=\{\mathbf x\in\mathbb R^2:\mathbf x\cdot\mathbf v_j+\gamma_j=k\},\quad k\in\mathbb Z."></div>
+          <p>Because the normal has unit length, neighbouring lines are one unit apart. Increasing an offset by <span data-tex="\Delta\gamma_j"></span> moves its lines by <span data-tex="-\Delta\gamma_j\mathbf v_j"></span>. The active family darkens while you adjust it; the compensating fifth family appears in dark grey.</p>
+          <p>A grid is <em>regular</em> when no three lines meet at one point. The four-cell construction below assumes this condition.</p></div></li>
+        <li><span>03</span><div><h3>Label each open cell in five dimensions</h3><p>For a point away from the grid lines, assign five integer coordinates using the ceiling function:</p>
+          <div class="equation" data-tex="K_j(\mathbf x)=\left\lceil\mathbf x\cdot\mathbf v_j+\gamma_j\right\rceil,\qquad K(\mathbf x)\in\mathbb Z^5."></div>
+          <p>The five labels stay constant throughout each open cell. Crossing a line of family <span data-tex="j"></span> in the positive normal direction increases just the corresponding coordinate by one. Cells need not be pentagons: “pentagrid” refers to the five line families.</p></div></li>
+        <li><span>04</span><div><h3>Solve a two-line crossing</h3><p>Choose two distinct families and two line indices. Their intersection is the solution of</p>
+          <div class="equation" data-tex="\begin{pmatrix}v_{r,x}&amp;v_{r,y}\\v_{s,x}&amp;v_{s,y}\end{pmatrix}\mathbf x_0=\begin{pmatrix}k_r-\gamma_r\\k_s-\gamma_s\end{pmatrix}."></div>
+          <p>The two normals are not parallel, so this system has a unique solution. At the crossing, set the two integer coordinates explicitly and use ceilings for the other three:</p>
+          <div class="equation" data-tex="K_r=k_r,\quad K_s=k_s,\quad K_j=\left\lceil\mathbf x_0\cdot\mathbf v_j+\gamma_j\right\rceil\;(j\ne r,s)."></div>
+          <p>Writing <span data-tex="\mathbf e_j"></span> for the jth unit vector in five dimensions, the four adjacent cells have labels</p>
+          <div class="equation" data-tex="K,\quad K+\mathbf e_r,\quad K+\mathbf e_r+\mathbf e_s,\quad K+\mathbf e_s."></div></div></li>
+        <li><span>05</span><div><h3>Project the four labels into a rhombus</h3><p>Map an integer label to a point in the tiling plane using the linear map</p>
+          <div class="equation" data-tex="f:\mathbb Z^5\longrightarrow\mathbb R^2,\qquad f(K)=\sum_{j=0}^{4}K_j\mathbf v_j."></div>
+          <p>The four cell labels give the four vertices, in boundary order:</p>
+          <div class="equation" data-tex="f(K),\quad f(K)+\mathbf v_r,\quad f(K)+\mathbf v_r+\mathbf v_s,\quad f(K)+\mathbf v_s."></div>
+          <p>Opposite sides are parallel, and all four sides have length one. The pair of directions determines which rhombus appears.</p>
+          <table class="rhombus-table"><caption>The two prototiles</caption><thead><tr><th>Rhombus</th><th>Interior angles</th><th>Area</th></tr></thead><tbody><tr><td>Thick</td><td><span data-tex="72^\circ,\;108^\circ"></span></td><td><span data-tex="\sin(72^\circ)"></span></td></tr><tr><td>Thin</td><td><span data-tex="36^\circ,\;144^\circ"></span></td><td><span data-tex="\sin(36^\circ)"></span></td></tr></tbody></table>
+          <p>Click a rhombus above to inspect its actual crossing and integer label, and highlight the two lines that generated it. Click a pentagrid line to highlight the entire ribbon of rhombi generated along it, as in Figure 3 of the poster.</p></div></li>
+        <li><span>06</span><div><h3>Read the finite patch</h3><p>The app includes crossings inside a disk of radius R in grid space. Its projection gives a finite, roughly circular patch. Increasing the radius constructs more tiles; zooming changes only the view.</p>
+          <div class="equation" data-tex="\|\mathbf x_0\|\le R,\qquad \frac{N_{\mathrm{thick}}(R)}{N_{\mathrm{thin}}(R)}\longrightarrow\varphi=\frac{1+\sqrt5}{2}\quad(R\to\infty)."></div>
+          <p>A finite patch has boundary effects, so the displayed ratio need not be exactly the golden ratio. Non-periodicity refers to the whole infinite tiling: no nonzero translation preserves it, although finite patches recur.</p>
+          <details><summary>What happens at a singular grid?</summary><p>If three or more lines meet, there is no unique four-cell prescription at that crossing. The app detects such coincidences within the sampled patch and applies a tiny, reproducible perturbation that preserves the zero sum. This chooses a nearby regular grid. A notice shows the effective offsets, which are also included in the geometry export.</p></details>
+          <p class="method-reference">Animation inspired by <a href="https://github.com/fanyangxyz/penrose-diy" target="_blank" rel="noopener">Fan Yang’s Penrose DIY</a>, implemented here using the same pentagrid geometry as the poster. Further reading: <a href="docs/mathematics.md">implementation notes</a> and <a href="https://www.cs.williams.edu/~bailey/06le.pdf" target="_blank" rel="noopener">Effinger-Dean, <em>The Empire Problem in Penrose Tilings</em>, Chapter 4</a>.</p></div></li>
+      </ol>
+    </section>
+    <p class="math-note">A note on aperiodicity: finite patches recur, but no nonzero translation preserves the whole infinite tiling. This explorer shows a finite patch; its tile ratio need not equal φ exactly.</p>
+  </main><footer><span>Penrose Tiling</span><span>Based on the poster by Isaac Hung · Imperial College London</span><a href="docs/mathematics.md">Construction notes</a></footer>
+</body>
+</html>

@@ -1,5 +1,17 @@
 node_modules/
 .DS_Store
+local-archive/
 tmp/
 coverage/
+__pycache__/
+*.pyc
 *.log
+paper/build/
+*.aux
+*.out
+*.toc
+*.nav
+*.snm
+*.fls
+*.fdb_latexmk
+*.synctex.gz

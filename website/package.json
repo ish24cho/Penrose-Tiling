@@ -1,0 +1,18 @@
+{
+  "name": "penrose-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive Penrose tilings using de Bruijn's pentagrid construction",
+  "scripts": {
+    "start": "python3 -m http.server 5173 --bind 127.0.0.1 --directory ..",
+    "test": "node --test",
+    "vendor:math": "node scripts/vendor-math.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "katex": "0.16.22"
+  }
+}

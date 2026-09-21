@@ -1,65 +1,65 @@
-# Penrose Lab
+# Penrose Tiling
 
-An interactive companion to **Isaac Hung’s Penrose Tiling research poster**, Imperial College London. Generate finite patches of Penrose rhombus tilings using the poster’s **de Bruijn pentagrid construction**.
+Isaac Hung's research poster and its interactive companion website, based on de Bruijn's pentagrid construction.
 
-## Run locally
+- [Research poster (PDF)](paper/Penrose_Tiling_Poster.pdf)
+- [Editable LaTeX source](paper/poster.tex)
+- [Interactive website](website/index.html)
 
-Requires Python 3. From this directory:
+## Run the website
+
+From this repository:
+
+```sh
+npm start
+```
+
+Open **http://localhost:5173**. Alternatively, without Node.js:
 
 ```sh
 python3 -m http.server 5173 --bind 127.0.0.1
 ```
 
-Open **http://localhost:5173**. If Node.js is installed, `npm start` runs the same command. The app runs without installing packages or building assets. KaTeX and its math fonts are bundled locally, so there are no runtime network dependencies. Serve the files over HTTP; opening `index.html` directly may block JavaScript modules.
+The root page redirects to `website/`, preserving saved pattern parameters. Serve the whole repository so the website can link to the paper. No package installation or build step is needed to use the website; KaTeX and its fonts are bundled locally.
 
-## Explore
-
-- Adjust four grid shifts; the fifth is calculated so the sum stays zero. While adjusting, the active pentagrid family darkens to black, the balancing fifth family appears in dark grey, and other families fade.
-- The default style follows the poster: navy headings, a white background, coral thick rhombi and light-blue thin rhombi. The expanded methods section includes locally rendered LaTeX equations.
-- Choose a starting arrangement or generate a random one.
-- Compare the tiling and pentagrid side by side.
-- Click a tile to inspect its generating crossing, grid families and integer coordinates. The selection follows the same pair of indexed grid lines as shifts change. If it moves outside the patch radius, the tracked rhombus remains visible and is included in counts and exports. The **Inspect a tile** button also works from the keyboard.
-- Change patch radius, palette and edge visibility. Drag to pan, scroll or use buttons to zoom, and use **Fit** to recenter.
-- Export the full patch as vector SVG, a 2000 × 2000 PNG, or JSON containing settings, effective shifts, crossings and all tile vertices. Exports cover the whole patch regardless of the current pan or zoom.
-- **Copy link to this pattern** saves shifts and appearance in the URL fragment. Localhost links require this app running on the recipient’s computer at the same address. Camera and selected tile are not saved.
-
-Singular grids are resolved using a small deterministic zero-sum perturbation. The interface displays a notice and the effective shifts. This is a nearby regular grid, not an enumeration of all possible singular resolutions.
-
-## Poster and mathematics
-
-- [Original poster (PDF)](Penrose_Tiling_Poster.pdf) — preserved unchanged.
-- [Construction and implementation notes](docs/mathematics.md).
-- **Author’s pending correction:** Figure 4’s adjacent vector angle should read **2π/5**. The application already uses this value.
-- Clarification: finite patches recur; non-periodicity means there is no nonzero translation preserving the entire infinite tiling.
-
-## Repository structure
+## Repository layout
 
 ```text
-Penrose_Tiling_Poster.pdf  Original research poster
-index.html                Interface and method explanation
-src/app.js                Controls, SVG views, inspection and exports
-src/pentagrid.js           Pure geometry implementation
-src/style.css             Responsive layout and styling
-tests/pentagrid.test.js    Geometry and degeneracy checks
-docs/mathematics.md        Formulas, conventions and references
+paper/
+  Penrose_Tiling_Poster.pdf   Rebuilt 120 × 72 cm poster
+  poster.tex                 Editable LaTeX source
+  figures/                   Five generated PDF/SVG figure pairs and parameters
+  assets/                    Institutional logo from the supplied poster
+  scripts/                   Reproducible figure and poster builders
+website/
+  index.html                 Interactive explorer
+  src/                       Geometry, controls, animation and styling
+  tests/                     Geometry and animation tests
+  vendor/                    Local KaTeX distribution and license
+  docs/                      Mathematical implementation notes
 ```
 
-## Validate
+Only the paper, website and their maintenance files are intended for GitHub. `local-archive/` holds the original poster, original source folder and development scratch files **on this computer only**. It is ignored by Git, along with dependencies and compilation output. The old material has not been deleted.
 
-With Node.js 20 or newer:
+## Rebuild and validate
 
 ```sh
-npm test
+npm test                  # Geometry and assembly-animation tests (Node.js 20+)
+npm run paper             # Regenerate figures and compile the poster
 ```
 
-Tests check unit edges, tile areas, the projection formula, edge sharing and disk topology, non-overlapping interiors, singular handling, changed geometry, and the large-patch tile ratio.
+The paper build also needs Python 3, the packages in `paper/requirements.txt`, and a LaTeX distribution with `pdflatex`. See [paper build notes](paper/README.md).
 
-## Equation rendering
+## What the website does
 
-LaTeX is stored in `data-tex` attributes in `index.html` and rendered by `src/math.js` using [KaTeX](https://katex.org/docs/browser). Vendored JavaScript, CSS, fonts and its MIT license live in `vendor/katex/`. To refresh the bundled files after changing the pinned development dependency, run `npm ci` and `npm run vendor:math`. Ordinary use does not require npm.
+Adjust grid offsets, compare the pentagrid with the dual tiling, and inspect a rhombus as its indexed grid lines move. Click any pentagrid line to highlight its entire ribbon of rhombi (as in poster Figure 3); the ribbon remains selected while shifts change. The fifth offset balances the other four. **Animate assembly** shows the current pattern forming outward through shared edges; play/pause, replay, speed and a timeline are available for every generated pattern. If a rhombus is selected, it is the assembly seed.
 
-## Scope and attribution
+SVG, PNG and JSON exports always contain the completed tiling, including while the animation is paused. Intermediate animation frames are illustrations of assembly, not valid tilings in their own right. SVG/PNG exports preserve a selected ribbon highlight; JSON records the selected line.
 
-This version implements the pentagrid method developed in the poster. Matching-rule placement and substitution/inflation are not separate generation modes. All results are finite patches with an outer boundary; there are no matching-rule arrow decorations. The mathematical construction produces the arrangement.
+## Attribution
 
-The repository is local; no remote or public deployment is configured. No license has been chosen. The original poster retains its author’s attribution and third-party references.
+The poster retains Isaac Hung, Yanki Lekili and Imperial College London as credited in the supplied material. Mathematical figures are generated by the original code in this repository. The institutional logo is preserved from the supplied source. The rebuilt poster uses a new standalone LaTeX layout; it does not depend on the old Gemini theme.
+
+Animation inspiration: [Fan Yang's Penrose DIY](https://github.com/fanyangxyz/penrose-diy). The animation here is an independent implementation on the existing pentagrid engine; no source code from that project was copied. KaTeX's license is included in `website/vendor/katex/LICENSE`.
+
+No blanket license is assigned to the poster, code or institutional branding. No GitHub remote or public deployment is configured; this repository is prepared locally for now.

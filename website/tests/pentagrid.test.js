@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { generate, balanceShifts, project, PHI, DEFAULT_SHIFTS } from '../src/pentagrid.js';
+import { generate, balanceShifts, project, PHI, DEFAULT_SHIFTS, belongsToLine } from '../src/pentagrid.js';
 
 const key = p => p.map(x => x.toFixed(7)).join(',');
 const edgeKey = (a, b) => [key(a), key(b)].sort().join('|');
@@ -75,4 +75,27 @@ test('tracked rhombus retains line identity and updates outside the patch bounda
   assert.equal(patch.tiles.filter(t => t.id === original.id).length, 1);
   assert.ok(patch.tiles.every(t => !t.outsidePatch || t.id === tracked.id));
   assert.equal(patch.thick + patch.thin, patch.tiles.length);
+});
+
+test('a selected grid line yields a connected ribbon before and after a shift', () => {
+  for (const shifts of [DEFAULT_SHIFTS, balanceShifts([.4, -.2, .61, -.17])]) {
+    const tiles = generate({ shifts, radius: 5 }).tiles;
+    const ribbon = tiles.filter(tile => belongsToLine(tile, 0, 0));
+    assert.ok(ribbon.length > 10);
+    const edges = new Map(), neighbours = ribbon.map(() => new Set());
+    ribbon.forEach((tile, i) => {
+      assert.ok(Math.abs(tile.crossing[0] + shifts[0]) < 1e-10);
+      tile.points.forEach((p, j) => {
+        const edge = edgeKey(p, tile.points[(j + 1) % 4]);
+        if (edges.has(edge)) {
+          const other = edges.get(edge); neighbours[i].add(other); neighbours[other].add(i);
+        } else edges.set(edge, i);
+      });
+    });
+    assert.equal(neighbours.filter(n => n.size === 1).length, 2);
+    assert.ok(neighbours.every(n => n.size === 1 || n.size === 2));
+    const visited = new Set([0]), queue = [0];
+    for (const index of queue) for (const next of neighbours[index]) if (!visited.has(next)) { visited.add(next); queue.push(next); }
+    assert.equal(visited.size, ribbon.length);
+  }
 });

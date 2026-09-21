@@ -1,6 +1,6 @@
 # The poster’s construction in code
 
-The interface follows the poster’s two sections titled **Constructing Penrose Tilings with Pentagrid**. The original PDF is retained unchanged.
+The interface follows the poster’s two sections titled **Constructing Penrose Tilings with Pentagrid**. The rebuilt poster and its editable source are in `paper/`. The original submission is preserved in a local archive excluded from Git.
 
 ## 1. Five line families
 
@@ -12,7 +12,7 @@ L_j(k) = { x : x · v_j + γ_j = k }, k ∈ ℤ
 Σ γ_j = 0
 ```
 
-**Pending poster correction, confirmed by the author:** the adjacent vector angle in Figure 4 should be **2π/5**, not π/5. The implementation uses 2π/5. These vectors are the normals to the grid lines and also the edge vectors of the dual rhombi.
+**Figure correction, confirmed by the author and applied in the rebuilt poster:** the adjacent vector angle in Figure 4 should be **2π/5**, not π/5. The implementation uses 2π/5. These vectors are the normals to the grid lines and also the edge vectors of the dual rhombi.
 
 Four independent sliders determine γ₀ through γ₃. The fifth is minus their sum. Independent arbitrary changes to all five shifts do not in general preserve this Penrose sum condition.
 
@@ -45,16 +45,22 @@ starting at scale 10⁻⁶, and checks again. The sum remains zero. The interfac
 
 ## Interpretation and poster clarifications
 
-- Aperiodicity rules out a nonzero translation of the **whole infinite tiling** onto itself. Finite patches do recur. The poster’s statement that no finite patch repeats is too strong.
+- Aperiodicity rules out a nonzero translation of the **whole infinite tiling** onto itself. Finite patches do recur. The original statement that no finite patch repeats was corrected in the rebuilt poster.
 - The thick/thin ratio approaches the golden ratio for large patches. Finite patches have boundary effects.
 - Different slider settings can sometimes represent translated tilings or yield the same finite patch. Moving a slider does not guarantee a distinct local combinatorial pattern at every step.
 - Equal-sided rhombi alone do not force a Penrose tiling. Here the regular zero-sum pentagrid construction supplies the global constraints; the app does not implement free placement or matching-rule arrows.
 
 ## References
 
-- Isaac Hung, [Penrose Tiling poster](../Penrose_Tiling_Poster.pdf), Imperial College London (the supplied source).
+- Isaac Hung, [Penrose Tiling poster](../../paper/Penrose_Tiling_Poster.pdf), Imperial College London (the supplied source).
 - N. G. de Bruijn, *Algebraic theory of Penrose’s non-periodic tilings of the plane I, II* (1981). See the original publication for the equivalence theorem.
 - Laura Effinger-Dean, [The Empire Problem in Penrose Tilings](https://www.cs.williams.edu/~bailey/06le.pdf), Williams College, 2006, Chapter 4, for the pentagrid and dual construction. Duane Bailey was the thesis advisor.
 - Andrejs Treibergs, [Penrose Tiling](https://www.math.utah.edu/~treiberg/PenroseSlides.pdf), lecture slides linked in the poster.
 
 The JavaScript geometry implementation is original code implementing the formulas above.
+
+## Ribbon selection and animation
+
+Selecting grid line `L_j(k)` highlights precisely the tiles whose generating pair contains family `j` with line index `k`. This is one ribbon (the correspondence shown in poster Figure 3), not all rhombi of a given orientation. Its identity persists when offsets change. The implementation and poster figure generator share the `belongsToLine` predicate.
+
+Assembly is an illustrative animation of the current finite patch. Shared integer-coordinate edges define an adjacency graph. Breadth-first layers determine when each rhombus translates from near its scaled grid crossing and grows to its exact projected position. The selected rhombus is the initial seed when available. The final frame is the original geometry; intermediate frames may overlap or have gaps.

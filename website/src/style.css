@@ -133,3 +133,17 @@ polygon.selected { stroke: #003e72!important; stroke-width: 3!important; filter:
   .equation { font-size: 12px; }.method p { font-size: 14px; }.method-key { font-size: 12px; }
   footer { padding: 10px 16px 25px; flex-wrap: wrap; font-size: 11px; }
 }
+.animation-controls { border-bottom: 1px solid var(--line); padding: 13px 22px 10px; }
+.animation-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.animation-buttons button, .animation-buttons select { border: 1px solid #acb8c2; background: #fff; color: var(--accent); padding: 6px 9px; border-radius: 2px; font-size: 12px; }
+.animation-buttons label { font-size: 12px; margin-left: auto; }
+.animation-timeline { display: flex; align-items: center; gap: 12px; font-size: 11px; margin-top: 8px; }
+.animation-timeline input { flex: 1; min-width: 50px; margin: 8px 0; }
+.animation-timeline output { min-width: 135px; text-align: right; }
+.animation-controls p { font-size: 11px; line-height: 1.6; margin: 6px 0 0; color: #666; }
+@media(max-width:670px) { .animation-controls { padding: 12px 8px; }.animation-timeline { flex-wrap: wrap; }.animation-timeline output { min-width: auto; }.animation-buttons label { margin-left: 0; } }
+.ribbon-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; padding: 12px 22px; border-bottom: 1px solid var(--line); font-size: 12px; }
+.ribbon-controls select, .ribbon-controls input, .ribbon-controls button { font-size: 12px; padding: 5px 7px; border: 1px solid #acb8c2; border-radius: 2px; color: var(--accent); background: white; }
+.ribbon-controls input { width: 60px; }.ribbon-help { color: #666; font-size: 11px; }
+.grid-hit { cursor: pointer; pointer-events: stroke; }
+@media(max-width:670px) { .ribbon-controls { padding: 12px 8px; } }

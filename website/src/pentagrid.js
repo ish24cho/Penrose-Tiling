@@ -9,6 +9,9 @@ export function balanceShifts(firstFour) {
 export function project(k) {
   return k.reduce((p, n, j) => [p[0] + n * VECTORS[j][0], p[1] + n * VECTORS[j][1]], [0, 0]);
 }
+export function belongsToLine(tile, family, index) {
+  return (tile.r === family && tile.kr === index) || (tile.s === family && tile.ks === index);
+}
 function construct(shifts, radius, trackedCrossing) {
   const tiles = [];
   let singular = false;
