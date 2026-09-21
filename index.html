@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Penrose tilings through de Bruijn’s pentagrid method. An interactive companion to Isaac Hung’s research poster.">
+  <title>Penrose Lab — An exploration of aperiodic order</title>
+  <link rel="stylesheet" href="src/style.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="./"><span class="brand-mark">◇</span> PENROSE <span>LAB</span></a><nav><a href="#method">The method</a><a href="Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Research poster ↗</a></nav></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">GEOMETRY / EXPERIMENT 001</p><h1>Order without repetition.</h1><p class="lede">Five families of lines. Two kinds of tile. An infinite space to explore.</p></div><div class="intro-note">An interactive companion to<br><strong>Isaac Hung’s Penrose Tiling poster</strong></div></section>
+    <section class="workspace" aria-label="Interactive tiling generator">
+      <aside class="controls">
+        <div class="section-heading"><h2>Shape your pattern</h2><span class="step">01—05</span></div>
+        <p class="muted">Shift the grids to discover a different arrangement.</p>
+        <label class="field">Starting point<select id="preset"><option value="original">First exploration</option><option value="rosette">Rosette study</option><option value="ribbons">Ribbon study</option><option value="singular">Singular grid study</option><option value="custom" disabled>Custom arrangement</option></select></label>
+        <div class="section-heading small"><h3>Grid shifts</h3><span class="formula">Σ γ = 0</span></div>
+        <div id="shifts"></div>
+        <div class="balanced"><span><i class="dot d4"></i>γ₄ <small>balanced automatically</small></span><output id="shift4"></output></div>
+        <button id="random" class="primary">↻ &nbsp; New arrangement</button>
+        <div class="divider"></div>
+        <label class="range-label" for="radius">Patch radius <output id="radius-value">7</output></label><input id="radius" type="range" min="3" max="15" step="1" value="7">
+        <div class="range-hints"><span>Intimate</span><span>Expansive</span></div>
+        <label class="field">Color palette<select id="palette"><option value="lagoon">Lagoon & limestone</option><option value="clay">Terracotta & blush</option><option value="ink">Ink & paper</option><option value="iris">Iris & lilac</option></select></label>
+        <label class="check"><input id="edges" type="checkbox" checked> Show tile edges</label>
+        <div class="divider"></div><div class="export-row"><button id="svg-export">↓ SVG</button><button id="png-export">↓ PNG</button><button id="json-export">↓ JSON</button></div>
+        <button id="share" class="text-button">Copy link to this pattern ↗</button>
+        <p id="message" role="status" class="muted message"></p>
+      </aside>
+      <div class="studio">
+        <div class="studio-bar"><div class="tabs" role="group" aria-label="View"><button data-view="tiling" aria-pressed="true">Tiling</button><button data-view="both" aria-pressed="false">Side by side</button><button data-view="grid" aria-pressed="false">Pentagrid</button></div><span id="status" class="live">● Live construction</span></div>
+        <div id="stages" class="stages" data-view="tiling">
+          <div class="stage tiling-stage"><span class="canvas-label">THE DUAL TILING</span><svg id="tiling" viewBox="-20 -20 40 40" aria-label="Interactive Penrose tiling; click a tile to inspect it" role="img"></svg><div class="canvas-tools"><button id="zoom-out" aria-label="Zoom out">−</button><button id="fit">Fit</button><button id="zoom-in" aria-label="Zoom in">+</button></div><span class="canvas-hint">Drag to pan · Scroll to zoom · Click to inspect</span></div>
+          <div class="stage grid-stage"><span class="canvas-label">THE PENTAGRID</span><svg id="grid" viewBox="-8 -8 16 16" aria-label="Five line families in the pentagrid" role="img"></svg><span class="canvas-hint">One crossing ↔ one rhombus</span></div>
+        </div>
+        <div class="stats"><div><strong id="total">—</strong><span>Total rhombi</span></div><div><strong id="thick">—</strong><span><i class="swatch thick-swatch"></i>Thick · 72° / 108°</span></div><div><strong id="thin">—</strong><span><i class="swatch thin-swatch"></i>Thin · 36° / 144°</span></div><div><strong id="ratio">—</strong><span>Thick / thin · φ ≈ 1.618</span></div></div>
+        <div class="inspector"><div><p class="eyebrow">FOLLOW THE CONSTRUCTION</p><p id="inspect">Select a rhombus to reveal its grid crossing and five-dimensional coordinates.</p></div><button id="inspect-first" class="text-button">Inspect a tile →</button></div>
+        <p id="singular-note" class="notice" hidden></p>
+      </div>
+    </section>
+    <section id="method" class="method"><div class="method-intro"><p class="eyebrow">FROM THE POSTER TO THE PLANE</p><h2>A little shift.<br>An entirely new pattern.</h2><p>de Bruijn’s pentagrid construction connects a simple system of lines to the rich geometry of Penrose tilings.</p><a href="Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Read the original research poster ↗</a></div><ol><li><span>01</span><div><h3>Lay down five grids</h3><p>Each family is perpendicular to vⱼ = (cos 2πj/5, sin 2πj/5). Its shift γⱼ moves the lines. We keep the five shifts summing to zero.</p><code>x · vⱼ + γⱼ ∈ ℤ</code></div></li><li><span>02</span><div><h3>Find the crossings</h3><p>Two grid lines meet at a point. The four adjacent cells supply integer coordinates in five dimensions.</p><code>Kⱼ(x) = ⌈x · vⱼ + γⱼ⌉</code></div></li><li><span>03</span><div><h3>Project into a rhombus</h3><p>Map those coordinates back to the plane. Each crossing becomes a thin or thick rhombus, with edges of equal length.</p><code>f(K) = Σ Kⱼvⱼ</code></div></li></ol></section>
+    <p class="math-note">A note on aperiodicity: finite patches recur, but no nonzero translation preserves the whole infinite tiling. This explorer shows a finite patch; its tile ratio need not equal φ exactly.</p>
+  </main><footer><span>PENROSE LAB</span><span>Based on the poster by Isaac Hung · Imperial College London</span><a href="docs/mathematics.md">Construction notes ↗</a></footer>
+</body>
+</html>
