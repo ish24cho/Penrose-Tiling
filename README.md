@@ -2,7 +2,7 @@
 
 An interactive exploration of **Penrose tilings using de Bruijn's pentagrid construction**.
 
-[**Live Demo**](YOUR-GITHUB-PAGES-LINK) | [**Research Poster**](Penrose_Tiling_Poster.pdf)
+[**Live Demo**](https://ish24cho.github.io/Penrose-Tiling/) | [**Research Poster**](Penrose_Tiling_Poster.pdf)
 
 ## Overview
 
