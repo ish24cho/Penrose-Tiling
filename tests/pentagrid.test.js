@@ -64,3 +64,15 @@ test('invalid parameters fail explicitly', () => {
   assert.throws(() => generate({ radius: Infinity }), /Radius/);
   assert.throws(() => balanceShifts([NaN, 0, 0, 0]), /finite/);
 });
+
+test('tracked rhombus retains line identity and updates outside the patch boundary', () => {
+  const original = generate({ radius: 7 }).tiles.find(t => Math.hypot(...t.crossing) > 6.5);
+  const patch = generate({ shifts: balanceShifts([.7, -.6, .3, -.2]), radius: 3, trackedCrossing: original });
+  const tracked = patch.tiles.find(t => t.id === original.id);
+  assert.ok(tracked);
+  assert.equal(tracked.outsidePatch, true);
+  assert.notDeepEqual(tracked.crossing, original.crossing);
+  assert.equal(patch.tiles.filter(t => t.id === original.id).length, 1);
+  assert.ok(patch.tiles.every(t => !t.outsidePatch || t.id === tracked.id));
+  assert.equal(patch.thick + patch.thin, patch.tiles.length);
+});

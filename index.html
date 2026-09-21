@@ -3,47 +3,47 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Explore Penrose tilings through de Bruijn’s pentagrid method. An interactive companion to Isaac Hung’s research poster.">
-  <title>Penrose Lab — An exploration of aperiodic order</title>
+  <title>Penrose Tiling — Pentagrid Construction</title>
   <link rel="stylesheet" href="vendor/katex/katex.min.css">
   <link rel="stylesheet" href="src/style.css">
   <script type="module" src="src/math.js"></script>
   <script type="module" src="src/app.js"></script>
 </head>
 <body>
-  <header><a class="brand" href="./"><span class="brand-mark">◇</span> PENROSE <span>LAB</span></a><nav><a href="#method">The method</a><a href="Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Research poster ↗</a></nav></header>
+  <header><a class="brand" href="./">Penrose Tiling</a><nav><a href="#method">The method</a><a href="Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Research poster</a></nav></header>
   <main>
-    <section class="intro"><div><p class="eyebrow">APERIODIC GEOMETRY · AN INTERACTIVE STUDY</p><h1>Penrose tilings.</h1><p class="lede">An exploration of de Bruijn’s pentagrid construction.</p></div><div class="intro-note">An interactive companion to<br><strong>Isaac Hung’s Penrose Tiling poster</strong></div></section>
+    <section class="intro"><div><h1>Pentagrid construction</h1><p class="lede">Interactive implementation of de Bruijn’s method.</p></div><div class="intro-note">Isaac Hung<br>Imperial College London</div></section>
     <section class="workspace" aria-label="Interactive tiling generator">
       <aside class="controls">
-        <div class="section-heading"><h2>Construction parameters</h2><span class="step">01—05</span></div>
+        <div class="section-heading"><h2>Construction parameters</h2></div>
         <p class="muted">Vary the offsets to explore the dual tiling. In the pentagrid view, a moving family is highlighted in black.</p>
-        <label class="field">Starting point<select id="preset"><option value="original">First exploration</option><option value="rosette">Rosette study</option><option value="ribbons">Ribbon study</option><option value="singular">Singular grid study</option><option value="custom" disabled>Custom arrangement</option></select></label>
+        <label class="field">Example<select id="preset"><option value="original">Default offsets</option><option value="rosette">Rosette</option><option value="ribbons">Ribbons</option><option value="singular">Singular grid</option><option value="custom" disabled>Custom arrangement</option></select></label>
         <div class="section-heading small"><h3>Grid shifts</h3><span class="formula" data-tex="\sum_{j=0}^{4}\gamma_j=0">Σ γ = 0</span></div>
         <div id="shifts"></div>
         <div class="balanced"><span><i class="dot d4"></i>γ₄ <small>balanced automatically</small></span><output id="shift4"></output></div>
-        <button id="random" class="primary">↻ &nbsp; New arrangement</button>
+        <button id="random" class="primary">Randomise offsets</button>
         <div class="divider"></div>
         <label class="range-label" for="radius">Patch radius <output id="radius-value">7</output></label><input id="radius" type="range" min="3" max="15" step="1" value="7">
-        <div class="range-hints"><span>Intimate</span><span>Expansive</span></div>
-        <label class="field">Color palette<select id="palette"><option value="mono">Black & white</option><option value="lagoon">Lagoon & limestone</option><option value="clay">Terracotta & blush</option><option value="ink">Ink & paper</option><option value="iris">Iris & lilac</option></select></label>
+        <div class="range-hints"><span>R = 3</span><span>R = 15</span></div>
+        <label class="field">Color palette<select id="palette"><option value="poster">Poster colours</option><option value="mono">Black & white</option><option value="lagoon">Green / cream</option><option value="clay">Coral / peach</option><option value="ink">Blue-grey / white</option><option value="iris">Purple / lilac</option></select></label>
         <label class="check"><input id="edges" type="checkbox" checked> Show tile edges</label>
         <div class="divider"></div><div class="export-row"><button id="svg-export">↓ SVG</button><button id="png-export">↓ PNG</button><button id="json-export">↓ JSON</button></div>
-        <button id="share" class="text-button">Copy link to this pattern ↗</button>
+        <button id="share" class="text-button">Copy pattern link</button>
         <p id="message" role="status" class="muted message"></p>
       </aside>
       <div class="studio">
         <div class="studio-bar"><div class="tabs" role="group" aria-label="View"><button data-view="tiling" aria-pressed="true">Tiling</button><button data-view="both" aria-pressed="false">Side by side</button><button data-view="grid" aria-pressed="false">Pentagrid</button></div><span id="status" class="live">● Live construction</span></div>
         <div id="stages" class="stages" data-view="tiling">
-          <div class="stage tiling-stage"><span class="canvas-label">THE DUAL TILING</span><svg id="tiling" viewBox="-20 -20 40 40" aria-label="Interactive Penrose tiling; click a tile to inspect it" role="img"></svg><div class="canvas-tools"><button id="zoom-out" aria-label="Zoom out">−</button><button id="fit">Fit</button><button id="zoom-in" aria-label="Zoom in">+</button></div><span class="canvas-hint">Drag to pan · Scroll to zoom · Click to inspect</span></div>
-          <div class="stage grid-stage"><span class="canvas-label">THE PENTAGRID</span><svg id="grid" viewBox="-8 -8 16 16" aria-label="Five line families in the pentagrid" role="img"></svg><span id="grid-motion" class="canvas-hint">One crossing ↔ one rhombus</span></div>
+          <div class="stage tiling-stage"><span class="canvas-label">Rhombic tiling</span><svg id="tiling" viewBox="-20 -20 40 40" aria-label="Interactive Penrose tiling; click a tile to inspect it" role="img"></svg><div class="canvas-tools"><button id="zoom-out" aria-label="Zoom out">−</button><button id="fit">Fit</button><button id="zoom-in" aria-label="Zoom in">+</button></div><span class="canvas-hint">Drag to pan · Scroll to zoom · Click to inspect</span></div>
+          <div class="stage grid-stage"><span class="canvas-label">Pentagrid</span><svg id="grid" viewBox="-8 -8 16 16" aria-label="Five line families in the pentagrid" role="img"></svg><span id="grid-motion" class="canvas-hint">One crossing ↔ one rhombus</span></div>
         </div>
         <div class="stats"><div><strong id="total">—</strong><span>Total rhombi</span></div><div><strong id="thick">—</strong><span><i class="swatch thick-swatch"></i>Thick · 72° / 108°</span></div><div><strong id="thin">—</strong><span><i class="swatch thin-swatch"></i>Thin · 36° / 144°</span></div><div><strong id="ratio">—</strong><span>Thick / thin · φ ≈ 1.618</span></div></div>
-        <div class="inspector"><div><p class="eyebrow">FOLLOW THE CONSTRUCTION</p><p id="inspect">Select a rhombus to reveal its grid crossing and five-dimensional coordinates.</p></div><button id="inspect-first" class="text-button">Inspect a tile →</button></div>
+        <div class="inspector"><div><p class="eyebrow">Selected rhombus</p><p id="inspect">Select a rhombus to reveal its grid crossing and five-dimensional coordinates.</p></div><button id="inspect-first" class="text-button">Inspect a tile</button></div>
         <p id="singular-note" class="notice" hidden></p>
       </div>
     </section>
     <section id="method" class="method">
-      <div class="method-intro"><p class="eyebrow">CONSTRUCTION NOTES</p><h2>From five grids<br>to a Penrose tiling.</h2><p>The pentagrid lives in one plane; its dual tiling lives in another. A cell of the grid becomes a vertex of the tiling, and a crossing of two lines becomes a rhombus.</p><p>The following construction uses the ceiling convention in the poster. Choose <strong>Side by side</strong> above to follow the correspondence as you change a shift.</p><a href="Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Original research poster ↗</a><div class="method-key"><span>Grid cell</span><b>↔</b><span>Tiling vertex</span><span>Two-line crossing</span><b>↔</b><span>Rhombus</span></div></div>
+      <div class="method-intro"><h2>Constructing Penrose tilings with a pentagrid</h2><p>The pentagrid lives in one plane; its dual tiling lives in another. A cell of the grid becomes a vertex of the tiling, and a crossing of two lines becomes a rhombus.</p><p>The following construction uses the ceiling convention in the poster. Choose <strong>Side by side</strong> above to follow the correspondence as you change a shift.</p><a href="Penrose_Tiling_Poster.pdf" target="_blank" rel="noopener">Original research poster</a><div class="method-key"><span>Grid cell</span><b>↔</b><span>Tiling vertex</span><span>Two-line crossing</span><b>↔</b><span>Rhombus</span></div></div>
       <ol class="derivation">
         <li><span>01</span><div><h3>Choose five directions and offsets</h3><p>Take five unit vectors equally spaced around the circle. They are normals to the five line families and, later, edge directions of the rhombi.</p>
           <div class="equation" data-tex="\mathbf v_j=\left(\cos\frac{2\pi j}{5},\,\sin\frac{2\pi j}{5}\right),\quad j=0,\ldots,4."></div>
@@ -78,6 +78,6 @@
       </ol>
     </section>
     <p class="math-note">A note on aperiodicity: finite patches recur, but no nonzero translation preserves the whole infinite tiling. This explorer shows a finite patch; its tile ratio need not equal φ exactly.</p>
-  </main><footer><span>PENROSE LAB</span><span>Based on the poster by Isaac Hung · Imperial College London</span><a href="docs/mathematics.md">Construction notes ↗</a></footer>
+  </main><footer><span>Penrose Tiling</span><span>Based on the poster by Isaac Hung · Imperial College London</span><a href="docs/mathematics.md">Construction notes</a></footer>
 </body>
 </html>

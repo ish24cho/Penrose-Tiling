@@ -15,10 +15,10 @@ Open **http://localhost:5173**. If Node.js is installed, `npm start` runs the sa
 ## Explore
 
 - Adjust four grid shifts; the fifth is calculated so the sum stays zero. While adjusting, the active pentagrid family darkens to black, the balancing fifth family appears in dark grey, and other families fade.
-- The default style is black and white. The expanded methods section includes locally rendered LaTeX equations.
+- The default style follows the poster: navy headings, a white background, coral thick rhombi and light-blue thin rhombi. The expanded methods section includes locally rendered LaTeX equations.
 - Choose a starting arrangement or generate a random one.
 - Compare the tiling and pentagrid side by side.
-- Click a tile to inspect its generating crossing, grid families and integer coordinates. The **Inspect a tile** button also works from the keyboard.
+- Click a tile to inspect its generating crossing, grid families and integer coordinates. The selection follows the same pair of indexed grid lines as shifts change. If it moves outside the patch radius, the tracked rhombus remains visible and is included in counts and exports. The **Inspect a tile** button also works from the keyboard.
 - Change patch radius, palette and edge visibility. Drag to pan, scroll or use buttons to zoom, and use **Fit** to recenter.
 - Export the full patch as vector SVG, a 2000 × 2000 PNG, or JSON containing settings, effective shifts, crossings and all tile vertices. Exports cover the whole patch regardless of the current pan or zoom.
 - **Copy link to this pattern** saves shifts and appearance in the URL fragment. Localhost links require this app running on the recipient’s computer at the same address. Camera and selected tile are not saved.

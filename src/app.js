@@ -2,10 +2,10 @@ import { generate, balanceShifts, DEFAULT_SHIFTS, VECTORS } from './pentagrid.js
 
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
-const palettes = { mono: ['#c4c4c4', '#fafafa', '#ffffff'], lagoon: ['#77aaa0', '#e8d6a9', '#f0f1e8'], clay: ['#be7461', '#ecc6af', '#f5ede3'], ink: ['#52646c', '#dbe0db', '#f0f1ed'], iris: ['#8586b7', '#d5c5df', '#eeedf3'] };
-const familyColors = ['#666666', '#777777', '#888888', '#999999', '#666666'];
+const palettes = { poster: ['#e98576', '#97cbe7', '#ffffff'], mono: ['#c4c4c4', '#fafafa', '#ffffff'], lagoon: ['#77aaa0', '#e8d6a9', '#f0f1e8'], clay: ['#be7461', '#ecc6af', '#f5ede3'], ink: ['#52646c', '#dbe0db', '#f0f1ed'], iris: ['#8586b7', '#d5c5df', '#eeedf3'] };
+const familyColors = ['#507da8', '#6e92b5', '#8395ba', '#657f9e', '#8b9baf'];
 const presets = { original: DEFAULT_SHIFTS, rosette: balanceShifts([.19, .19, .19, .19]), ribbons: balanceShifts([-.42, .28, -.11, .37]), singular: [0, 0, 0, 0, 0] };
-const state = { shifts: [...DEFAULT_SHIFTS], radius: 7, palette: 'mono', edges: true, view: 'tiling' };
+const state = { shifts: [...DEFAULT_SHIFTS], radius: 7, palette: 'poster', edges: true, view: 'tiling' };
 let activeFamily = null, shiftTimer;
 let data, selected, frame, camera = { x: 0, y: 0, size: 42 };
 
@@ -40,12 +40,24 @@ function syncControls() {
 function applyCamera() {
   $('tiling').setAttribute('viewBox', `${camera.x - camera.size / 2} ${camera.y - camera.size / 2} ${camera.size} ${camera.size}`);
 }
-function fit() { camera = { x: 0, y: 0, size: state.radius * 5 + 6 }; applyCamera(); }
+function patchSize() {
+  return Math.max(state.radius * 5 + 6, selected ? 2.3 * Math.max(...selected.points.flatMap(p => p.map(Math.abs))) : 0);
+}
+function fit() { camera = { x: 0, y: 0, size: patchSize() }; applyCamera(); }
 function setMessage(text) { $('message').textContent = text; }
 function regenerate() {
   cancelAnimationFrame(frame);
   frame = requestAnimationFrame(() => {
-    try { data = generate(state); selected = null; render(); } catch (error) { setMessage(error.message); }
+    try {
+      const selectedId = selected?.id;
+      data = generate({ ...state, trackedCrossing: selected });
+      selected = data.tiles.find(tile => tile.id === selectedId) || null;
+      if (selected) {
+        const extent = Math.max(...selected.points.flatMap(([x, y]) => [Math.abs(x - camera.x), Math.abs(-y - camera.y)]));
+        camera.size = Math.max(camera.size, extent * 2.3);
+      }
+      render();
+    } catch (error) { setMessage(error.message); }
   });
 }
 function render() {
@@ -66,13 +78,13 @@ function render() {
   $('ratio').textContent = (data.thick / data.thin).toFixed(3);
   $('singular-note').hidden = !data.regularized;
   $('singular-note').textContent = 'These shifts create a singular grid in this patch (three or more lines meet). A tiny, deterministic, zero-sum shift resolves the ambiguity. Effective γ = [' + data.effectiveShifts.map(n => n.toFixed(9)).join(', ') + ']. JSON exports include these effective shifts.';
-  $('status').textContent = data.regularized ? '● Singularity resolved' : '● Live construction';
+  $('status').textContent = data.regularized ? 'Singular grid resolved' : 'Regular grid in this patch';
   $('inspect').textContent = 'Select a rhombus to reveal its grid crossing and five-dimensional coordinates.';
   if (selected) inspect(selected);
   applyCamera();
 }
 function renderGrid() {
-  const svg = $('grid'), radius = state.radius + 1;
+  const svg = $('grid'), radius = Math.max(state.radius + 1, selected ? Math.hypot(...selected.crossing) + 1 : 0);
   svg.replaceChildren(); svg.setAttribute('viewBox', `${-radius} ${-radius} ${2 * radius} ${2 * radius}`);
   const g = svgElement('g', { transform: 'scale(1,-1)' }, svg);
   const extent = 2 * radius;
@@ -92,6 +104,12 @@ function highlightMovingGrid() {
     line.setAttribute('stroke', active ? '#111111' : balanced ? '#555555' : familyColors[family]);
     line.setAttribute('stroke-width', active ? '2.2' : balanced ? '1.3' : '.8');
     line.setAttribute('opacity', active ? '1' : balanced ? '.85' : activeFamily !== null ? '.2' : '.65');
+    const inspected = selected && ((family === selected.r && +line.dataset.line === selected.kr) || (family === selected.s && +line.dataset.line === selected.ks));
+    if (inspected) {
+      line.setAttribute('stroke', active ? '#111111' : '#003e72');
+      line.setAttribute('stroke-width', '2.6');
+      line.setAttribute('opacity', '1');
+    }
   });
   $('grid-motion').textContent = activeFamily === null ? 'One crossing ↔ one rhombus' : `Moving γ${'₀₁₂₃'[activeFamily]}: black lines · γ₄ compensates in dark grey`;
 }
@@ -106,12 +124,8 @@ function inspect(tile) {
   const element = [...$('tiling').querySelectorAll('polygon')].find(el => el.dataset.id === tile.id);
   element?.classList.add('selected');
   $('inspect').textContent = `${tile.type === 'thick' ? 'Thick rhombus (72° / 108°)' : 'Thin rhombus (36° / 144°)'} · grids ${tile.r} & ${tile.s}, lines ${tile.kr} & ${tile.ks}. Crossing (${tile.crossing.map(v => v.toFixed(3)).join(', ')}). Base K = (${tile.k.join(', ')}); four vertices: f(K), f(K + e${tile.r}), f(K + e${tile.r} + e${tile.s}), f(K + e${tile.s}).`;
+  if (tile.outsidePatch) $('inspect').textContent += ' This tracked rhombus is outside the radius and is retained in the view and exports.';
   renderGrid();
-  $('grid').querySelectorAll('line').forEach(el => {
-    const hit = (+el.dataset.family === tile.r && +el.dataset.line === tile.kr) || (+el.dataset.family === tile.s && +el.dataset.line === tile.ks);
-    el.setAttribute('opacity', hit ? '1' : '.22');
-    if (hit) el.setAttribute('stroke-width', '2');
-  });
   svgElement('circle', { cx: tile.crossing[0], cy: -tile.crossing[1], r: .14, fill: '#fff', stroke: '#222222', 'stroke-width': '2', 'vector-effect': 'non-scaling-stroke' }, $('grid'));
 }
 function download(blob, filename) {
@@ -119,14 +133,14 @@ function download(blob, filename) {
   a.href = url; a.download = filename; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function exportSvg() {
-  const clone = $('tiling').cloneNode(true), size = state.radius * 5 + 6;
+  const clone = $('tiling').cloneNode(true), size = patchSize();
   clone.setAttribute('xmlns', NS); clone.setAttribute('width', '2000'); clone.setAttribute('height', '2000');
   clone.setAttribute('viewBox', `${-size / 2} ${-size / 2} ${size} ${size}`);
   clone.removeAttribute('id'); clone.querySelector('.selected')?.classList.remove('selected');
   const background = svgElement('rect', { x: -size / 2, y: -size / 2, width: size, height: size, fill: palettes[state.palette][2] });
   clone.prepend(background);
   const metadata = svgElement('metadata', {}, clone);
-  metadata.textContent = JSON.stringify({ method: 'de Bruijn pentagrid', ...state, effectiveShifts: data.effectiveShifts });
+  metadata.textContent = JSON.stringify({ method: 'de Bruijn pentagrid', ...state, trackedCrossing: selected ? { r: selected.r, s: selected.s, kr: selected.kr, ks: selected.ks } : null, effectiveShifts: data.effectiveShifts });
   return new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml' });
 }
 
