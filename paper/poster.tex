@@ -47,7 +47,7 @@ We say that \(\mathcal{T}\) is \textbf{a \emph{tiling} (or \emph{tessellation})}
 
 \begin{itemize}
     \item \textbf{No Translational Symmetry} -- no nonzero translation preserves the entire tiling; finite patches do recur.
-    
+
     \item \textbf{Can be constructed using different rules} -- for example, matching rules and projection methods (e.g., de Bruijn's pentagrid approach)
 
     \end{itemize}
@@ -79,24 +79,24 @@ There are only \textbf{five distinct edge directions} in the Penrose rhomb set, 
 \begin{lrbox}{\middlecolumn}\begin{minipage}[t]{36cm}\raggedright
 
   \heading{Constructing Penrose Tilings with Pentagrid}
-\textbf{1.  Five grids} \smallskip  
+\textbf{1.  Five grids} \smallskip
 For $j=0,\dots,4$ , set the unit direction vectors
 \[
 v_{j}=\bigl(\cos 2\pi j/5,\;\sin 2\pi j/5\bigr),\qquad
 \gamma_{0}+\dots+\gamma_{4}=0 .
 \]
-The $j$-th line family is  
+The $j$-th line family is
 \[
 \mathcal L_{j}=\bigl\{\,x\in\mathbb R^{2}\ \big|\ x\!\cdot\!v_{j}+\gamma_{j}\in\mathbb Z\bigr\}.
 \]
 
     \fig{figure4-directions-grid}{0.95}
 \figcap{4}{de Bruijn's Pentagrid and its Corresponding Vectors. Adjacent vectors are separated by $2\pi/5$.}
- 
+
 The pentagrid is called \textbf{regular} if no point of $\mathbb R^2$ belongs to \textbf{more than two of the five grids}, and otherwise singular.
 
 \medskip
-\textbf{2.  Integer coordinates of a cell} \smallskip  
+\textbf{2.  Integer coordinates of a cell} \smallskip
 For any $x\in\mathbb R^{2}$, define the integer-valued functions
 \[
 K_{j}(x)=\bigl\lceil\,x\!\cdot\!v_{j}+\gamma_{j}\bigr\rceil,
@@ -115,7 +115,7 @@ The map $x\mapsto K(x)$ is \textbf{constant} on each open cell and they change o
 \figcap{5}{Coordinates in Pentagrid. Four neighbouring cell labels project to the vertices of a rhombus.}
 
 \medskip
-\textbf{3.  Linear projection to the plane}\smallskip  
+\textbf{3.  Linear projection to the plane}\smallskip
 \[
 f\bigl(k_{0},\dots,k_{4}\bigr)=\sum_{j=0}^{4}k_{j}\,v_{j}
 \]
@@ -129,17 +129,17 @@ The $K(x)$ act as ``coordinates'' in a 5D space, and $f(K(x))$ projects them to 
 
     \heading{(Continue) Constructing Penrose Tilings with Pentagrid}
 
-\textbf{4.  Each two-line crossing gives one rhomb.} \smallskip  
+\textbf{4.  Each two-line crossing gives one rhomb.} \smallskip
  Choose $0\le r<s\le4$ and integers $k_{r},k_{s}$.  Solving
 \[
 v_{r}\!\cdot x+\gamma_{r}=k_{r},
 \qquad
 v_{s}\!\cdot x+\gamma_{s}=k_{s}
 \]
-gives an \textbf{intersection} $x_{0}$.  
+gives an \textbf{intersection} $x_{0}$.
 
 For example, given the \textbf{five-tuple} $K(x_{0})=(K_{0},\dots,K_{4})$ and the pair
-$(r,s)=(0,1)$, the \textbf{four vertices} correspond to  
+$(r,s)=(0,1)$, the \textbf{four vertices} correspond to
 \[
 K(x_{0})+(\varepsilon_{1},\;\varepsilon_{2},\;0,\;0,\;0),
 \qquad

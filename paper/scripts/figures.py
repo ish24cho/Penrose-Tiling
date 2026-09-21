@@ -21,7 +21,10 @@ plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 12, 'text.color'
 def save(fig, name):
     OUT.mkdir(exist_ok=True)
     for ext in ['pdf', 'svg']:
-        fig.savefig(OUT / f'{name}.{ext}', bbox_inches='tight', pad_inches=.08, facecolor='white')
+        target = OUT / f'{name}.{ext}'
+        fig.savefig(target, bbox_inches='tight', pad_inches=.08, facecolor='white')
+        if ext == 'svg':
+            target.write_text('\n'.join(line.rstrip() for line in target.read_text().splitlines()) + '\n')
     plt.close(fig)
 
 def clean(ax, limits=None):
