@@ -2,10 +2,11 @@ import { generate, balanceShifts, DEFAULT_SHIFTS, VECTORS } from './pentagrid.js
 
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
-const palettes = { lagoon: ['#77aaa0', '#e8d6a9', '#f0f1e8'], clay: ['#be7461', '#ecc6af', '#f5ede3'], ink: ['#52646c', '#dbe0db', '#f0f1ed'], iris: ['#8586b7', '#d5c5df', '#eeedf3'] };
-const familyColors = ['#427f7b', '#ac726b', '#859558', '#8881a6', '#b79a50'];
+const palettes = { mono: ['#c4c4c4', '#fafafa', '#ffffff'], lagoon: ['#77aaa0', '#e8d6a9', '#f0f1e8'], clay: ['#be7461', '#ecc6af', '#f5ede3'], ink: ['#52646c', '#dbe0db', '#f0f1ed'], iris: ['#8586b7', '#d5c5df', '#eeedf3'] };
+const familyColors = ['#666666', '#777777', '#888888', '#999999', '#666666'];
 const presets = { original: DEFAULT_SHIFTS, rosette: balanceShifts([.19, .19, .19, .19]), ribbons: balanceShifts([-.42, .28, -.11, .37]), singular: [0, 0, 0, 0, 0] };
-const state = { shifts: [...DEFAULT_SHIFTS], radius: 7, palette: 'lagoon', edges: true, view: 'tiling' };
+const state = { shifts: [...DEFAULT_SHIFTS], radius: 7, palette: 'mono', edges: true, view: 'tiling' };
+let activeFamily = null, shiftTimer;
 let data, selected, frame, camera = { x: 0, y: 0, size: 42 };
 
 function svgElement(tag, attrs, parent) {
@@ -55,7 +56,7 @@ function render() {
   const svg = $('tiling'); svg.replaceChildren();
   const group = svgElement('g', { transform: 'scale(1,-1)' }, svg);
   for (const tile of data.tiles) {
-    const el = svgElement('polygon', { points: tile.points.map(p => p.join(',')).join(' '), fill: tile.type === 'thick' ? thick : thin, stroke: state.edges ? '#36574f' : 'none', 'stroke-width': '.65', 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', 'data-id': tile.id }, group);
+    const el = svgElement('polygon', { points: tile.points.map(p => p.join(',')).join(' '), fill: tile.type === 'thick' ? thick : thin, stroke: state.edges ? '#222222' : 'none', 'stroke-width': '.65', 'stroke-linejoin': 'round', 'vector-effect': 'non-scaling-stroke', 'data-id': tile.id }, group);
     svgElement('title', {}, el).textContent = `${tile.type === 'thick' ? 'Thick' : 'Thin'} rhombus · grids ${tile.r}, ${tile.s}`;
   }
   renderGrid();
@@ -81,6 +82,23 @@ function renderGrid() {
       svgElement('line', { x1: d * vx - vy * extent, y1: d * vy + vx * extent, x2: d * vx + vy * extent, y2: d * vy - vx * extent, stroke: familyColors[j], 'stroke-width': '.8', opacity: '.65', 'vector-effect': 'non-scaling-stroke', 'data-family': j, 'data-line': k }, g);
     }
   });
+  highlightMovingGrid();
+}
+function highlightMovingGrid() {
+  $('grid').querySelectorAll('line').forEach(line => {
+    const family = +line.dataset.family;
+    const active = family === activeFamily;
+    const balanced = activeFamily !== null && family === 4;
+    line.setAttribute('stroke', active ? '#111111' : balanced ? '#555555' : familyColors[family]);
+    line.setAttribute('stroke-width', active ? '2.2' : balanced ? '1.3' : '.8');
+    line.setAttribute('opacity', active ? '1' : balanced ? '.85' : activeFamily !== null ? '.2' : '.65');
+  });
+  $('grid-motion').textContent = activeFamily === null ? 'One crossing ↔ one rhombus' : `Moving γ${'₀₁₂₃'[activeFamily]}: black lines · γ₄ compensates in dark grey`;
+}
+function endShift() {
+  clearTimeout(shiftTimer);
+  activeFamily = null;
+  if (selected) inspect(selected); else highlightMovingGrid();
 }
 function inspect(tile) {
   selected = tile;
@@ -94,7 +112,7 @@ function inspect(tile) {
     el.setAttribute('opacity', hit ? '1' : '.22');
     if (hit) el.setAttribute('stroke-width', '2');
   });
-  svgElement('circle', { cx: tile.crossing[0], cy: -tile.crossing[1], r: .14, fill: '#fff', stroke: '#244f45', 'stroke-width': '2', 'vector-effect': 'non-scaling-stroke' }, $('grid'));
+  svgElement('circle', { cx: tile.crossing[0], cy: -tile.crossing[1], r: .14, fill: '#fff', stroke: '#222222', 'stroke-width': '2', 'vector-effect': 'non-scaling-stroke' }, $('grid'));
 }
 function download(blob, filename) {
   const url = URL.createObjectURL(blob), a = document.createElement('a');
@@ -118,10 +136,15 @@ state.shifts.slice(0, 4).forEach((v, j) => {
   div.innerHTML = `<label class="shift-label" for="gamma${j}"><span><i class="dot" style="--dot:${familyColors[j]}"></i>γ${'₀₁₂₃'[j]}</span><output id="gamma-value${j}"></output></label><input id="gamma${j}" type="range" min="-1" max="1" step="0.001" aria-label="Grid ${j} shift">`;
   $('shifts').append(div);
   $(`gamma${j}`).addEventListener('input', () => {
+    activeFamily = j;
+    clearTimeout(shiftTimer);
+    shiftTimer = setTimeout(endShift, 800);
     state.shifts = balanceShifts(Array.from({ length: 4 }, (_, i) => +$(`gamma${i}`).value));
     syncControls(); regenerate();
   });
+  for (const name of ['change', 'blur', 'pointercancel']) $(`gamma${j}`).addEventListener(name, endShift);
 });
+document.addEventListener('pointerup', endShift);
 $('preset').addEventListener('change', event => { state.shifts = [...presets[event.target.value]]; syncControls(); regenerate(); });
 $('random').addEventListener('click', () => {
   const numbers = crypto.getRandomValues(new Uint32Array(4));

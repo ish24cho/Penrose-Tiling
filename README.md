@@ -10,11 +10,12 @@ Requires Python 3. From this directory:
 python3 -m http.server 5173 --bind 127.0.0.1
 ```
 
-Open **http://localhost:5173**. If Node.js is installed, `npm start` runs the same command. There are no packages to install, build steps, external fonts, or runtime network dependencies. Serve the files over HTTP; opening `index.html` directly may block JavaScript modules.
+Open **http://localhost:5173**. If Node.js is installed, `npm start` runs the same command. The app runs without installing packages or building assets. KaTeX and its math fonts are bundled locally, so there are no runtime network dependencies. Serve the files over HTTP; opening `index.html` directly may block JavaScript modules.
 
 ## Explore
 
-- Adjust four grid shifts; the fifth is calculated so the sum stays zero.
+- Adjust four grid shifts; the fifth is calculated so the sum stays zero. While adjusting, the active pentagrid family darkens to black, the balancing fifth family appears in dark grey, and other families fade.
+- The default style is black and white. The expanded methods section includes locally rendered LaTeX equations.
 - Choose a starting arrangement or generate a random one.
 - Compare the tiling and pentagrid side by side.
 - Click a tile to inspect its generating crossing, grid families and integer coordinates. The **Inspect a tile** button also works from the keyboard.
@@ -52,6 +53,10 @@ npm test
 ```
 
 Tests check unit edges, tile areas, the projection formula, edge sharing and disk topology, non-overlapping interiors, singular handling, changed geometry, and the large-patch tile ratio.
+
+## Equation rendering
+
+LaTeX is stored in `data-tex` attributes in `index.html` and rendered by `src/math.js` using [KaTeX](https://katex.org/docs/browser). Vendored JavaScript, CSS, fonts and its MIT license live in `vendor/katex/`. To refresh the bundled files after changing the pinned development dependency, run `npm ci` and `npm run vendor:math`. Ordinary use does not require npm.
 
 ## Scope and attribution
 
