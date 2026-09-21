@@ -13,7 +13,7 @@ Run `npm start` from the repository root and open http://localhost:5173. The web
 - **Animate assembly**, pause/continue, replay, timeline and playback speed.
 - SVG, PNG and JSON export of the completed patch; URL-based pattern settings.
 
-Animation starts near grid crossings, then translates and scales rhombi to their exact projected positions. Shared-edge adjacency determines a breadth-first assembly order. A selected rhombus is used as the seed; otherwise the nearest-to-origin crossing is used. Changing the pattern resets animation to the completed new patch. Animation is user-triggered, pauses when the document is hidden, and never changes the underlying mathematical geometry.
+Animation starts with the pentagrid visible behind rhombi centred on its crossings, then translates and scales them to their exact projected positions. The grid fades out during assembly and is omitted from completed-pattern exports. Replaying or scrubbing back restores it. Shared-edge adjacency determines a breadth-first assembly order. A selected rhombus is used as the seed; otherwise the nearest-to-origin crossing is used. Changing the pattern resets animation to the completed new patch. Animation is user-triggered, pauses when the document is hidden, and never changes the underlying mathematical geometry.
 
 Intermediate animation frames need not meet edge-to-edge. Exports always use the completed geometry. The animation is an original implementation inspired by [Fan Yang's Penrose DIY](https://github.com/fanyangxyz/penrose-diy).
 

@@ -85,7 +85,7 @@ function render() {
   $('inspect').textContent = 'Select a rhombus to reveal its grid crossing and five-dimensional coordinates.';
   if (selected) inspect(selected);
   if (selectedLine) highlightRibbon();
-  animation?.setTiles(data.tiles, selected?.id);
+  animation?.setTiles(data.tiles, selected?.id, data.effectiveShifts);
   applyCamera();
 }
 function renderGrid() {
@@ -176,6 +176,7 @@ function exportSvg() {
   clone.setAttribute('xmlns', NS); clone.setAttribute('width', '2000'); clone.setAttribute('height', '2000');
   clone.setAttribute('viewBox', `${-size / 2} ${-size / 2} ${size} ${size}`);
   clone.removeAttribute('id'); clone.querySelector('.selected')?.classList.remove('selected');
+  clone.querySelector('[data-assembly-grid]')?.remove();
   clone.querySelectorAll('polygon').forEach(el => el.removeAttribute('transform'));
   const background = svgElement('rect', { x: -size / 2, y: -size / 2, width: size, height: size, fill: palettes[state.palette][2] });
   clone.prepend(background);

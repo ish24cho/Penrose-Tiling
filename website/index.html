@@ -37,7 +37,7 @@
         <div class="animation-controls" aria-label="Rhombus assembly animation">
           <div class="animation-buttons"><button id="animation-play" aria-pressed="false">Animate assembly</button><button id="animation-replay">Replay</button><button id="animation-reset">Show completed tiling</button><label>Speed <select id="animation-speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label></div>
           <label class="animation-timeline" for="animation-progress">Assembly <input id="animation-progress" type="range" min="0" max="1000" value="1000"><output id="animation-readout" aria-live="off"></output></label>
-          <p>Rhombi move from their grid crossings into the dual tiling, spreading through shared edges. Intermediate frames illustrate assembly; they are not tilings.</p>
+          <p>The pentagrid appears behind the starting rhombi and fades as they assemble into the dual tiling, spreading through shared edges. Intermediate frames illustrate assembly; they are not tilings.</p>
         </div>
         <div id="stages" class="stages" data-view="tiling">
           <div class="stage tiling-stage"><span class="canvas-label">Rhombic tiling</span><svg id="tiling" viewBox="-20 -20 40 40" aria-label="Interactive Penrose tiling; click a tile to inspect it" role="img"></svg><div class="canvas-tools"><button id="zoom-out" aria-label="Zoom out">−</button><button id="fit">Fit</button><button id="zoom-in" aria-label="Zoom in">+</button></div><span class="canvas-hint">Drag to pan · Scroll to zoom · Click to inspect</span></div>
